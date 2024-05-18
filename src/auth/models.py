@@ -1,8 +1,7 @@
 import datetime
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
-from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
+from src.database import Base
 
 
 class User(Base):
@@ -15,3 +14,17 @@ class User(Base):
     role = Column(String, default="user")
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class Token(Base):
+    """
+    models for token
+    """
+    __tablename__ = "tokens"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, nullable=False)
+    access_token = Column(String(450), index=True)
+    refresh_token = Column(String(450), nullable=False, index=True)
+    status = Column(Boolean)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
