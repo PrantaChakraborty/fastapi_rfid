@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, EmailStr
 
 
@@ -27,3 +29,16 @@ class CreateUser(BaseModel):
     class Config:
         from_attributes = True
         use_enum_values = True
+
+
+class TokenSchema(BaseModel):
+    access_token: str
+    refresh_token: str
+
+
+class TokenCreateSchema(BaseModel):
+    user_id: int
+    access_token: str
+    refresh_token: str
+    status: bool
+    created_at: datetime
