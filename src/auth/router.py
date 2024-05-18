@@ -1,14 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from src.database import get_db
+from database import get_db
 
 from .service import (get_user, create_user, create_token)
 from .schemas import GetUser, CreateUser, LoginUser
-
-
-from .utils import verify_pwd
 from .auth_bearer import jwt_bearer
+from .utils import verify_pwd
 
 auth_route = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -54,4 +52,9 @@ def login_user(payload: LoginUser, db: Session = Depends(get_db)):
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                         detail="Incorrect email or password")
 
+
 # @auth_route.post("logout")
+@auth_route.get("/home")
+def get_home(db: Session = Depends(get_db), dependencies=Depends(jwt_bearer)):
+    user = get_user(db)
+    return user

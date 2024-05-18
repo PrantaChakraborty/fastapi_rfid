@@ -2,8 +2,9 @@ from typing import Optional
 from fastapi import HTTPException, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from src.config import setting
+from config import setting
 from .exceptions import InvalidTokenError
+
 from jose import jwt
 
 

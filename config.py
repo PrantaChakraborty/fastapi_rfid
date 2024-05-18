@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     # SERVER: str
 
     class Config:
-        env_file = Path(__file__).resolve().parent.parent / ".env"
+        env_file = Path(__file__).resolve().parent / ".env"
         print(f'environment created - {Path(Path(__file__).resolve().name)}')
 
 
