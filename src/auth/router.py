@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 
-from .service import (get_user, create_user, create_token)
+from .service import (get_user, create_user, create_token, get_users)
 from .schemas import GetUser, CreateUser, LoginUser
 from .auth_bearer import jwt_bearer
 from .utils import verify_pwd
@@ -56,5 +56,5 @@ def login_user(payload: LoginUser, db: Session = Depends(get_db)):
 # @auth_route.post("logout")
 @auth_route.get("/home")
 def get_home(db: Session = Depends(get_db), dependencies=Depends(jwt_bearer)):
-    user = get_user(db)
+    user = get_users(db)
     return user

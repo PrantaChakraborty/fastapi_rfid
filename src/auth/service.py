@@ -34,3 +34,7 @@ def create_token(db: Session, user_id: int):
     db.commit()
     db.refresh(token_obj)
     return token_obj
+
+
+def get_users(db: Session):
+    return db.query(User).all()
