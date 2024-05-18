@@ -1,10 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+
 from src.database import get_db
-from .service import (get_user, create_user, )
+
+from .service import (get_user, create_user, create_token)
 from .schemas import GetUser, CreateUser, LoginUser
-from datetime import date, datetime, timedelta, time
-from .utils import create_access_token, create_refresh_token, verify_pwd
+
+
+from .utils import verify_pwd
+from .auth_bearer import jwt_bearer
 
 auth_route = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -23,7 +27,6 @@ def register_user(payload: CreateUser, db: Session = Depends(get_db)):
             detail=f"User with email {payload.email} already exists",
         )
     user = create_user(db, payload)
-    print(user)
 
     return user
 
@@ -40,12 +43,14 @@ def login_user(payload: LoginUser, db: Session = Depends(get_db)):
         )
 
     user = get_user(db, payload.email)
-    if verify_pwd(payload.password, user.hashed_password):
-        token = create_access_token(user.id, timedelta(minutes=30))
-        refresh = create_refresh_token(user.id, timedelta(minutes=1008))
+    if user:
+        if verify_pwd(payload.password, user.hashed_password):
+            token_obj = create_token(db, user.id)
 
-        return {'access_token': token, 'token_type': 'bearer',
-                'refresh_token': refresh, "user_id": user.id}
+            return {
+                'access_token': token_obj.access_token,
+                'refresh_token': token_obj.refresh_token,
+                "user_type": user.role}
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                         detail="Incorrect email or password")
 
