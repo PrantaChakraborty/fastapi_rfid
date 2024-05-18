@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
-from .models import User
+from .models import User, Token
 
 from pydantic import EmailStr
 
 from .schemas import CreateUser
-from .utils import secure_pwd
+from .utils import secure_pwd, create_access_token, create_refresh_token
 
 
 def get_user(db: Session, email: EmailStr):
@@ -20,12 +20,17 @@ def create_user(db: Session, user: CreateUser):
     db.refresh(db_user)
     return db_user
 
-# def get_token(db: Session, token: str):
-#     return db.query(models.Token).filter(models.Token.token == token).first()
-#
-# def create_token(db: Session, token: str, user_id: int):
-#     db_token = models.Token(token=token, user_id=user_id)
-#     db.add(db_token)
-#     db.commit()
-#     db.refresh(db_token)
-#     return db_token
+
+def get_token(db: Session, token: str):
+    return db.query(Token).filter(Token.access_token == token).first()
+
+
+def create_token(db: Session, user_id: int):
+    access_token = create_access_token(user_id)
+    refresh_token = create_refresh_token(user_id)
+    token_obj = Token(user_id=user_id, access_token=access_token,
+                      refresh_token=refresh_token, status=True)
+    db.add(token_obj)
+    db.commit()
+    db.refresh(token_obj)
+    return token_obj
