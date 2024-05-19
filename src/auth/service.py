@@ -40,7 +40,15 @@ def get_users(db: Session):
     return db.query(User).all()
 
 
-def get_user_token(db: Session, user_id: int, access_token: str):
-    tokens = db.query(Token).filter(Token.user_id == user_id,
-                                    Token.access_token == access_token).first()
-    return tokens
+def get_user_token(db: Session, user_id: int = None, access_token: str = None,
+                   refresh_token: str = None):
+    token = None
+    if access_token and user_id:
+        token = db.query(Token).filter(
+            Token.user_id == user_id,
+                    Token.access_token == access_token).first()
+    if refresh_token:
+        token = db.query(Token).filter(
+                    Token.refresh_token == refresh_token,
+            Token.status==True).first()
+    return token

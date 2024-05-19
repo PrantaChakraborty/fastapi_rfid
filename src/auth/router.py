@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Any
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 
@@ -6,7 +6,15 @@ from database import get_db
 
 from .service import (get_user, create_user, create_token, get_users,
                       get_user_token)
-from .schemas import GetUser, CreateUser, LoginUser, GetUserSchema
+from .schemas import (
+    GetUser,
+    CreateUser,
+    LoginUser,
+    GetUserSchema,
+    RefreshTokenSchema,
+    TokenSchema
+)
+
 from .auth_bearer import jwt_bearer, decode_jwt
 from .utils import verify_pwd
 
@@ -64,11 +72,12 @@ def get_home(db: Session = Depends(get_db)) -> List[GetUserSchema]:
 
 
 @auth_route.post('/logout')
-def logout(dependencies=Depends(jwt_bearer), db: Session = Depends(get_db)):
+def logout(dependencies=Depends(jwt_bearer), db: Session = Depends(get_db)) \
+        -> Response:
     token = dependencies
     payload = decode_jwt(token)
     user_id = payload['sub']
-    user_token = get_user_token(db, user_id, token)
+    user_token = get_user_token(db, user_id, access_token=token)
 
     if user_token:
         user_token.status = False
@@ -76,3 +85,22 @@ def logout(dependencies=Depends(jwt_bearer), db: Session = Depends(get_db)):
         db.commit()
 
     return Response(status_code=status.HTTP_200_OK, content="User logged out")
+
+
+@auth_route.post('/token_refresh', response_model=TokenSchema)
+def token_refresh(payload: RefreshTokenSchema, db: Session = Depends(
+    get_db)) -> Any:
+    existing_token = get_user_token(db=db,
+                                    refresh_token=payload.refresh_token)
+    if not existing_token:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                             detail="Invalid token")
+    user_id = existing_token.user_id
+    existing_token.status = False
+    db.add(existing_token)
+    db.commit()
+    new_token = create_token(db, user_id)
+    return {"access_token": new_token.access_token,
+            "refresh_token": new_token.refresh_token}
+
+

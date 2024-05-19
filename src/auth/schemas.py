@@ -53,3 +53,9 @@ class GetUserSchema(BaseModel):
     class Config:
         populate_by_name = True
         from_attributes = True
+
+
+class RefreshTokenSchema(BaseModel):
+    refresh_token: str
+
+
