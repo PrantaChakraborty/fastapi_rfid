@@ -38,3 +38,9 @@ def create_token(db: Session, user_id: int):
 
 def get_users(db: Session):
     return db.query(User).all()
+
+
+def get_user_token(db: Session, user_id: int, access_token: str):
+    tokens = db.query(Token).filter(Token.user_id == user_id,
+                                    Token.access_token == access_token).first()
+    return tokens
