@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class GetUser(BaseModel):
@@ -42,3 +42,14 @@ class TokenCreateSchema(BaseModel):
     refresh_token: str
     status: bool
     created_at: datetime
+
+
+class GetUserSchema(BaseModel):
+    user_id: int = Field(..., alias="id")
+    role: str
+    email: EmailStr
+    name: str
+
+    class Config:
+        populate_by_name = True
+        from_attributes = True
