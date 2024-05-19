@@ -1,11 +1,16 @@
 from typing import Optional
+
 from fastapi import HTTPException, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from sqlalchemy.orm import Session
 
 from config import setting
 from .exceptions import InvalidTokenError
+from .models import Token
 
 from jose import jwt
+
+from database import get_db
 
 
 def decode_jwt(jwtoken: str):
@@ -14,6 +19,15 @@ def decode_jwt(jwtoken: str):
         return payload
     except InvalidTokenError:
         return None
+
+
+def check_token_validity(token: str) -> bool:
+    db: Session = next(get_db())
+    token_obj = db.query(Token).filter(Token.access_token == token,
+                                       Token.status == True).first()
+    if token_obj is not None:
+        return True
+    return False
 
 
 class JWTBearer(HTTPBearer):
@@ -42,7 +56,7 @@ class JWTBearer(HTTPBearer):
         try:
             payload = decode_jwt(jwtoken)
             if payload is not None:
-                return True
+                return check_token_validity(jwtoken)
             return False
         except jwt.ExpiredSignatureError:
             return False
