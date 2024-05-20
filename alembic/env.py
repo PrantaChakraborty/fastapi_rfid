@@ -22,6 +22,7 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 from database import Base
 from src.auth.models import User, Token
+from src.rfid.models import Rfid
 
 target_metadata = Base.metadata
 
