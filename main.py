@@ -1,7 +1,8 @@
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.auth import router
+from src.auth import router as auth_router
+from src.rfid import routers as rfid_router
 
 # app = FastAPI(dependencies=[Depends(get_query_token)])
 app = FastAPI()
@@ -17,7 +18,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router.auth_route)
+app.include_router(auth_router.auth_route)
+app.include_router(rfid_router.rfid_route)
 # app.include_router(items.router)
 # app.include_router(
 #     admin.router,
