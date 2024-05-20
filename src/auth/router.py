@@ -88,13 +88,13 @@ def logout(dependencies=Depends(jwt_bearer), db: Session = Depends(get_db)) \
 
 
 @auth_route.post('/token_refresh', response_model=TokenSchema)
-def token_refresh(payload: RefreshTokenSchema, db: Session = Depends(
-    get_db)) -> Any:
+def token_refresh(payload: RefreshTokenSchema, db: Session = Depends(get_db)
+                  ) -> Any:
     existing_token = get_user_token(db=db,
                                     refresh_token=payload.refresh_token)
     if not existing_token:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                             detail="Invalid token")
+                            detail="Invalid token")
     user_id = existing_token.user_id
     existing_token.status = False
     db.add(existing_token)
@@ -102,5 +102,3 @@ def token_refresh(payload: RefreshTokenSchema, db: Session = Depends(
     new_token = create_token(db, user_id)
     return {"access_token": new_token.access_token,
             "refresh_token": new_token.refresh_token}
-
-
