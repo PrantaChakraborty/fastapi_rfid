@@ -22,6 +22,11 @@ class Settings(BaseSettings):
     #
     # # internal env
     adminapikey: str
+    # mqtt settings
+    mqtt_host: str
+    mqtt_port: int
+    mqtt_username: str
+    mqtt_password: str
     #
     # SERVER: str
 
