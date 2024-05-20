@@ -16,6 +16,11 @@ def get_user(db: Session, email: EmailStr):
     return db.query(User).filter(User.email == email).first()
 
 
+def get_user_rfid_card_no(db: Session, user_id: int):
+    user_obj = db.query(User).filter(User.id == user_id).first()
+    return user_obj.rfid
+
+
 def create_user(db: Session, user: CreateUser):
     hashed_password = secure_pwd(user.password)
     rfid = generate_rfid()
