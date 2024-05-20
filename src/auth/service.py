@@ -70,7 +70,9 @@ def get_user_token(db: Session, user_id: int = None, access_token: str = None,
 def get_user_name(rfid: str):
     db = next(get_db())
     user = db.query(User).filter(User.rfid == rfid).first()
-    return user.name
+    if user:
+        return user.name
+    return ''
 
 
 def create_admin():
