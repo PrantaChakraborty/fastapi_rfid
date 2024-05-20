@@ -11,6 +11,8 @@ from .utils import (
     generate_rfid
 )
 
+from database import get_db
+
 
 def get_user(db: Session, email: EmailStr):
     return db.query(User).filter(User.email == email).first()
@@ -63,3 +65,9 @@ def get_user_token(db: Session, user_id: int = None, access_token: str = None,
                     Token.refresh_token == refresh_token,
             Token.status==True).first()
     return token
+
+
+def get_user_name(rfid: str):
+    db = next(get_db())
+    user = db.query(User).filter(User.rfid == rfid).first()
+    return user.name
