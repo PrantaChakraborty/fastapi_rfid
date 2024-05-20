@@ -1,4 +1,6 @@
 import datetime
+import random
+
 from typing import Union, Any, Optional
 
 from fastapi.security import OAuth2PasswordBearer
@@ -40,4 +42,12 @@ def create_refresh_token(subject: Union[str, Any]) -> str:
     encoded_jwt = jwt.encode(to_encode, setting.refresh_secret_key,
                              setting.algorithm)
     return encoded_jwt
+
+
+def generate_rfid():
+    """
+    function for generating a random rfid
+    """
+    return random.randint(100000, 999999)
+
 
