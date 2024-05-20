@@ -9,11 +9,16 @@ import paho.mqtt.client as mqtt
 
 from exceptions import MqttException
 
+from src.rfid.service import create_rfid
+
+from config import setting
+
 logger = logging.getLogger(__name__)
 
 
-def process_message(message: dict) -> None:
-    pass
+def process_message(message: json) -> None:
+    create_rfid(message)
+    return None
 
 
 def on_message(cl, userdata, message):
@@ -30,27 +35,16 @@ def on_message(cl, userdata, message):
         logger.exception(e)
 
 
-# initialize the broker
-# for test purpose
-MQTT_BROKER = "mqtt.eclipseprojects.io"
+MQTT_BROKER = setting.mqtt_host
 client = mqtt.Client()
-client.connect(MQTT_BROKER, port=1883)
-
-# for production
-
-# MQTT_BROKER = setup.os.environ.get('MQTT_BROKER')
-# client = mqtt.Client()
-# client.username_pw_set(username=setup.os.environ.get('MQTT_USERNAME'),
-#                        password=setup.os.environ.get('MQTT_PASSWORD'))
-# client.connect(MQTT_BROKER, port=int(os.environ.get('MQTT_PORT')))
+client.username_pw_set(username=setting.mqtt_username,
+                       password=setting.mqtt_password)
+client.connect(MQTT_BROKER, port=setting.mqtt_port)
 
 if __name__ == '__main__':
-    # subscribe to the topic topic_list = ['zicore/hardware/hub-1',
-    #  'zicore/hardware/hub-2', 'zicore/hardware/hub-3',
-    # 'zicore/hardware/hub-4', 'zicore/hardware/hub-5']
 
     # will subscribe similar like topic list
-    client.subscribe('mahfuj/hardware/')
+    client.subscribe('mahfuj/hardware/thesis')
     client.on_message = on_message
     print('server started')
     client.loop_forever()
