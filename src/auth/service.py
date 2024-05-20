@@ -71,3 +71,15 @@ def get_user_name(rfid: str):
     db = next(get_db())
     user = db.query(User).filter(User.rfid == rfid).first()
     return user.name
+
+
+def create_admin():
+    db = next(get_db())
+    hashed_password = secure_pwd("cft6vgy7$$")
+    rfid = generate_rfid()
+    db_user = User(email="admin@gmail.com", name="Admin",
+                   hashed_password=hashed_password, rfid=rfid, role="admin",
+                   is_active=True)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
