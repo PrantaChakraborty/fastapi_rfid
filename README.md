@@ -6,8 +6,12 @@
     - Make a file named ``.env``
     - Copy all from ``example.env`` to ``.env``
     - Change the db configuration as required.
-    - Then run the command to create db tables ```python3 create_db.py```
-    - Then run the server 
-   ```bash
-  uvicorn src.main:app --reload
+    - Run migrations command
+  ```bash
+    alembic revision --autogenerate -m "initial migrations"
+    alembic upgrade head
   ```
+    - Then run the server 
+  ```bash
+    uvicorn src.main:app --reload
+    ```
