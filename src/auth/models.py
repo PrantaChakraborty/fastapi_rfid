@@ -14,6 +14,7 @@ class User(Base):
     role = Column(String, default="user")
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    rfid = Column(String, unique=True, index=True)
 
 
 class Token(Base):

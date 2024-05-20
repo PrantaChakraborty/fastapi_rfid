@@ -4,7 +4,12 @@ from .models import User, Token
 from pydantic import EmailStr
 
 from .schemas import CreateUser
-from .utils import secure_pwd, create_access_token, create_refresh_token
+from .utils import (
+    secure_pwd,
+    create_access_token,
+    create_refresh_token,
+    generate_rfid
+)
 
 
 def get_user(db: Session, email: EmailStr):
@@ -13,8 +18,9 @@ def get_user(db: Session, email: EmailStr):
 
 def create_user(db: Session, user: CreateUser):
     hashed_password = secure_pwd(user.password)
+    rfid = generate_rfid()
     db_user = User(email=user.email, name=user.name,
-                   hashed_password=hashed_password)
+                   hashed_password=hashed_password, rfid=rfid)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
