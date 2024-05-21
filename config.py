@@ -41,6 +41,8 @@ class Settings(BaseSettings):
     VALIDATE_CERTS: bool
     MAIL_FROM: EmailStr
 
+    sentry_dsn: str
+
     class Config:
         env_file = Path(__file__).resolve().parent / ".env"
         print(f'environment created - {Path(Path(__file__).resolve().name)}')
