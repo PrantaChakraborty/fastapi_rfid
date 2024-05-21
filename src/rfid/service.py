@@ -48,7 +48,7 @@ def get_user_rfid_objects(db: Session, rfid: str) -> List[RfidModel]:
 
 def get_all_rfid_objects(db: Session) -> List[RfidModel]:
     rfid_objects = db.query(RfidModel).order_by(
-        RfidModel.created_at.desc()).all()
+        RfidModel.id.desc()).all()
     return rfid_objects
 
 
