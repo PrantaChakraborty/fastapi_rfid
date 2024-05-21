@@ -5,14 +5,15 @@ from sqlalchemy.orm import Session
 from database import get_db
 
 from .service import (get_user, create_user, create_token, get_users,
-                      get_user_token)
+                      get_user_token, get_user_by_id)
 from .schemas import (
     GetUser,
     CreateUser,
     LoginUser,
     GetUserSchema,
     RefreshTokenSchema,
-    TokenSchema
+    TokenSchema,
+    AddRfidSchema
 )
 
 from .auth_bearer import jwt_bearer, decode_jwt
@@ -103,3 +104,20 @@ def token_refresh(payload: RefreshTokenSchema, db: Session = Depends(get_db)
     new_token = create_token(db, user_id)
     return {"access_token": new_token.access_token,
             "refresh_token": new_token.refresh_token}
+
+
+@auth_route.post('/rfid/create')
+def add_rfid(payload: AddRfidSchema,
+             dependencies=Depends(jwt_bearer),
+             db: Session = Depends(get_db)) -> Response:
+    token = dependencies
+    token_payload = decode_jwt(token)
+    user_id = token_payload['sub']
+    user = get_user_by_id(db, user_id)
+    if user is not None:
+        user.rfid = payload.rfid
+        db.add(user)
+        db.commit()
+
+    return Response(status_code=status.HTTP_200_OK,
+                    content="Rfid successfully added")

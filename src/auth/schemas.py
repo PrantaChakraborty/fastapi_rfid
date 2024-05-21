@@ -59,3 +59,10 @@ class RefreshTokenSchema(BaseModel):
     refresh_token: str
 
 
+class AddRfidSchema(BaseModel):
+    rfid: str
+
+    class Config:
+        from_attributes = True
+        use_enum_values = True
+

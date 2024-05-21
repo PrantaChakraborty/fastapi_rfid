@@ -25,9 +25,9 @@ def get_user_rfid_card_no(db: Session, user_id: int):
 
 def create_user(db: Session, user: CreateUser):
     hashed_password = secure_pwd(user.password)
-    rfid = generate_rfid()
+    # rfid = generate_rfid()
     db_user = User(email=user.email, name=user.name,
-                   hashed_password=hashed_password, rfid=rfid)
+                   hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -59,11 +59,11 @@ def get_user_token(db: Session, user_id: int = None, access_token: str = None,
     if access_token and user_id:
         token = db.query(Token).filter(
             Token.user_id == user_id,
-                    Token.access_token == access_token).first()
+            Token.access_token == access_token).first()
     if refresh_token:
         token = db.query(Token).filter(
-                    Token.refresh_token == refresh_token,
-            Token.status==True).first()
+            Token.refresh_token == refresh_token,
+            Token.status == True).first()
     return token
 
 
@@ -73,6 +73,13 @@ def get_user_name(rfid: str):
     if user:
         return user.name
     return ''
+
+
+def get_user_by_id(db: Session, user_id: int):
+    user = db.query(User).filter(User.id == user_id).first()
+    if user:
+        return user
+    return None
 
 
 def create_admin():
