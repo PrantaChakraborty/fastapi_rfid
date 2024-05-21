@@ -30,9 +30,10 @@ def create_rfid(message: CreateRfidSchema) -> None:
         db.commit()
         if status:
             user_obj, _ = get_user_data_from_rfid(id=rfid_obj.id)
-            sub, body = generate_email_subject_body(rfid_obj)
-            email = user_obj.email
-            asyncio.run(send_mail(email, sub, body))
+            if user_obj is not None:
+                sub, body = generate_email_subject_body(rfid_obj)
+                email = user_obj.email
+                asyncio.run(send_mail(email, sub, body))
     except SQLAlchemyError as e:
         print(e)
     return None
