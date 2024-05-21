@@ -58,7 +58,8 @@ def login_user(payload: LoginUser, db: Session = Depends(get_db)):
             return {
                 'access_token': token_obj.access_token,
                 'refresh_token': token_obj.refresh_token,
-                "user_type": user.role}
+                "user_type": user.role,
+                "rfid": user.rfid}
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                         detail="Incorrect email or password")
 
